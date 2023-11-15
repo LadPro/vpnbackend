@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "creacion de ec2 con docker con wire"
+
+Parameters:
+  SgId: 
+    Type: String
+    Default: "id del security group"
+  TypeIns: 
+    Type: String
+    Default: "typo de isntancia"
+  AmiId: 
+    Type: String
+    Default: "id del ami"
+
+Resources: 
+  Ec2Vpn:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      KeyName: vpn
+      ImageId: !Ref AmiId
+      InstanceType: !Ref  TypeIns
+      SecurityGroupIds: 
+        - !Ref SgId
+      UserData:   
+        Fn::Base64: |
+          #!/bin/bash -ex
+          yum update -y
+          yum install docker -y
+          systemctl start docker
+          systemctl enable docker
+          # curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          # chmod +x /usr/local/bin/docker-compose
+          docker run -d \
+          --name=wireguard \
+          --cap-add=NET_ADMIN \
+          --cap-add=SYS_MODULE `#optional` \
+          -e PUID=1000 \
+          -e PGID=1000 \
+          -e TZ=Etc/UTC \
+          -e SERVERPORT=51820 `#optional` \
+          -e PEERS=1 `#optional` \
+          -e PEERDNS=auto `#optional` \
+          -e INTERNAL_SUBNET=10.13.13.0 `#optional` \
+          -e ALLOWEDIPS=0.0.0.0/0 `#optional` \
+          -e PERSISTENTKEEPALIVE_PEERS= `#optional` \
+          -e LOG_CONFS=true `#optional` \
+          -p 51820:51820/udp \
+          -v /home/wireguard/config:/config \
+          -v /lib/modules:/lib/modules `#optional` \
+          --sysctl="net.ipv4.conf.all.src_valid_mark=1" \
+          --restart unless-stopped \
+          lscr.io/linuxserver/wireguard:latest
+
+Outputs:
+  Ipserver:
+    Description: "la ip del server"
+    Value: !GetAtt Ec2Vpn.PublicIp
+
+
+
+

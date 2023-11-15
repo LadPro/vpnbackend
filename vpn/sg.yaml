@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ---
+
+Parameters:
+  VpcId: 
+    Type: String
+    Default: "id del security group"
+
+Resources:
+  SgVpn:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: vpn_sg
+      GroupDescription: "security group que permite entrada " 
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0 
+        - IpProtocol: udp
+          FromPort: 51820
+          ToPort: 51820
+          CidrIp: 0.0.0.0/0 
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+  
+  
+
+Outputs:
+  SgVpn:
+    Description: "id del security group"
+    Value: !Ref SgVpn
