@@ -4,14 +4,14 @@ Description: ---
 Parameters:
   VpcId: 
     Type: String
-    Default: "id del security group"
+    Default: "id del vpc group"
 
 Resources:
   SgVpn:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupName: vpn_sg
-      GroupDescription: "security group que permite entrada " 
+      GroupDescription: "security group que permite entrada al puerto udp-51820" 
       VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp

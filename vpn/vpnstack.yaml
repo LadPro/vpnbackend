@@ -7,7 +7,7 @@ Parameters:
     Default: "id del security group"
   TypeIns: 
     Type: String
-    Default: "typo de isntancia"
+    Default: "tipo de isntancia"
   AmiId: 
     Type: String
     Default: "id del ami"
